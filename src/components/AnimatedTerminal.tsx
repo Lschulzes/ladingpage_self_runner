@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { Github, Clock, Cloud, Zap } from 'lucide-react';
 
 interface TerminalLine {
   id: string;
@@ -6,6 +7,8 @@ interface TerminalLine {
   service: string;
   message: string;
   delay: number;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
 }
 
 const terminalLines: TerminalLine[] = [
@@ -15,6 +18,8 @@ const terminalLines: TerminalLine[] = [
     service: 'github:',
     message: 'received workflow_run.queued',
     delay: 0,
+    icon: Github,
+    label: 'GitHub',
   },
   {
     id: 'scheduler',
@@ -22,6 +27,8 @@ const terminalLines: TerminalLine[] = [
     service: 'scheduler:',
     message: 'starting runner for monorepo-ci',
     delay: 800,
+    icon: Clock,
+    label: 'Scheduler',
   },
   {
     id: 'ecs',
@@ -29,6 +36,8 @@ const terminalLines: TerminalLine[] = [
     service: 'ecs:',
     message: 'runTask arn:aws:ecs:...',
     delay: 1600,
+    icon: Cloud,
+    label: 'ECS Fargate',
   },
   {
     id: 'runner',
@@ -36,6 +45,8 @@ const terminalLines: TerminalLine[] = [
     service: 'runner:',
     message: 'registered as self-hosted #47',
     delay: 2400,
+    icon: Zap,
+    label: 'Runner',
   },
 ];
 
@@ -126,7 +137,8 @@ export function AnimatedTerminal() {
   };
 
   return (
-    <div className='hidden md:block'>
+    <div className='hidden md:block space-y-6'>
+      {/* Terminal Panel */}
       <div className='bg-card border-2 rounded-lg overflow-hidden shadow-lg'>
         <div className='bg-muted px-4 py-2 flex items-center gap-2 border-b'>
           <div className='h-2.5 w-2.5 rounded-full bg-red-500' />
@@ -172,6 +184,64 @@ export function AnimatedTerminal() {
               </span>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Animated Icons Flow */}
+      <div className='bg-card border-2 rounded-lg p-6'>
+        <div className='flex items-center justify-center gap-4 md:gap-8'>
+          {terminalLines.map((line) => {
+            const Icon = line.icon;
+            const isVisible = visibleLines.includes(line.id);
+            const isActive = isVisible && (isRunning || showCompletion);
+
+            return (
+              <div key={line.id} className='flex flex-col items-center gap-3'>
+                {/* Icon */}
+                <div
+                  className={`relative transition-all duration-500 ${
+                    isVisible
+                      ? 'opacity-100 scale-100 translate-y-0'
+                      : 'opacity-20 scale-75 translate-y-4'
+                  }`}
+                >
+                  <div
+                    className={`p-3 md:p-4 rounded-lg border-2 transition-all duration-500 ${
+                      isActive
+                        ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
+                        : isVisible
+                        ? 'border-primary/30 bg-primary/5'
+                        : 'border-muted bg-muted/50'
+                    }`}
+                  >
+                    <Icon
+                      className={`h-6 w-6 md:h-8 md:w-8 transition-colors duration-300 ${
+                        isActive
+                          ? 'text-primary'
+                          : isVisible
+                          ? 'text-primary/70'
+                          : 'text-muted-foreground'
+                      }`}
+                    />
+                  </div>
+                  {isActive && (
+                    <div className='absolute -top-1 -right-1 h-3 w-3 md:h-4 md:w-4 rounded-full bg-primary animate-ping' />
+                  )}
+                </div>
+
+                {/* Label */}
+                <div
+                  className={`text-xs font-medium text-center transition-all duration-300 ${
+                    isVisible
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-30 translate-y-2'
+                  }`}
+                >
+                  {line.label}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
