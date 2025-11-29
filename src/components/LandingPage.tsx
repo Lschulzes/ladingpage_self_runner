@@ -42,28 +42,78 @@ export function LandingPage() {
       {/* Hero Section */}
       <section className='relative overflow-hidden border-b'>
         <div className='container mx-auto px-4 py-24 md:py-32'>
-          <div className='mx-auto max-w-4xl text-center space-y-6'>
-            <h1 className='text-5xl md:text-6xl font-bold tracking-tight'>
-              Ephemeral GitHub Actions runners,
-              <br />
-              <span className='text-primary'>production-ready</span>.
-            </h1>
-            <p className='text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto'>
-              Launch self-hosted runners on AWS only when you need them—secure,
-              observable, and cost-efficient.
-            </p>
-            <div className='flex flex-col sm:flex-row gap-4 justify-center items-center pt-4'>
-              <Button size='lg' className='text-lg px-8'>
-                Get Started
-                <ArrowRight className='ml-2 h-4 w-4' />
-              </Button>
-              <Button size='lg' variant='outline' className='text-lg px-8'>
-                View on GitHub
-              </Button>
+          <div className='mx-auto max-w-6xl'>
+            <div className='grid md:grid-cols-2 gap-12 items-center'>
+              {/* Left: Text Content */}
+              <div className='space-y-6'>
+                <h1 className='text-5xl md:text-6xl font-bold tracking-tight'>
+                  Ephemeral GitHub Actions runners,
+                  <br />
+                  <span className='text-primary'>production-ready</span>.
+                </h1>
+                <p className='text-xl md:text-2xl text-muted-foreground'>
+                  Launch self-hosted runners on AWS only when you need
+                  them—secure, observable, and cost-efficient.
+                </p>
+                <div className='flex flex-col sm:flex-row gap-4 pt-4'>
+                  <Button size='lg' className='text-lg px-8'>
+                    Get Started
+                    <ArrowRight className='ml-2 h-4 w-4' />
+                  </Button>
+                  <Button size='lg' variant='outline' className='text-lg px-8'>
+                    View on GitHub
+                  </Button>
+                </div>
+                <div className='flex items-center gap-2 text-sm text-muted-foreground pt-2'>
+                  <span className='inline-flex items-center gap-1'>
+                    <span className='h-2 w-2 rounded-full bg-green-500'></span>
+                    Production-ready
+                  </span>
+                  <span>·</span>
+                  <span>Open Source · MIT License</span>
+                </div>
+              </div>
+
+              {/* Right: Terminal Log */}
+              <div className='hidden md:block'>
+                <div className='bg-card border-2 rounded-lg overflow-hidden shadow-lg'>
+                  <div className='bg-muted px-4 py-2 flex items-center gap-2 border-b'>
+                    <div className='h-2.5 w-2.5 rounded-full bg-red-500'></div>
+                    <div className='h-2.5 w-2.5 rounded-full bg-yellow-500'></div>
+                    <div className='h-2.5 w-2.5 rounded-full bg-green-500'></div>
+                    <span className='ml-2 text-xs text-muted-foreground font-mono'>
+                      runner-orchestrator
+                    </span>
+                  </div>
+                  <div className='p-6 font-mono text-sm space-y-2 bg-[#0d1117] text-[#c9d1d9]'>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-primary'>&gt;</span>
+                      <span className='text-[#79c0ff]'>github:</span>
+                      <span>received workflow_run.queued</span>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-primary'>&gt;</span>
+                      <span className='text-[#79c0ff]'>scheduler:</span>
+                      <span>starting runner for monorepo-ci</span>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-primary'>&gt;</span>
+                      <span className='text-[#79c0ff]'>ecs:</span>
+                      <span>runTask arn:aws:ecs:...</span>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-primary'>&gt;</span>
+                      <span className='text-[#79c0ff]'>runner:</span>
+                      <span>registered as self-hosted #47</span>
+                    </div>
+                    <div className='flex items-center gap-2 pt-2 border-t border-[#30363d]'>
+                      <span className='text-green-500'>✓</span>
+                      <span>workflow completed in 7m 13s – cleanup OK</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <p className='text-sm text-muted-foreground pt-4'>
-              Built and battle-tested in a healthcare EMR platform.
-            </p>
           </div>
         </div>
       </section>
@@ -218,6 +268,53 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Before vs After Section */}
+      <section className='py-24 border-b bg-muted/30'>
+        <div className='container mx-auto px-4'>
+          <div className='mx-auto max-w-6xl'>
+            <h2 className='text-3xl md:text-4xl font-bold text-center mb-12'>
+              What it changes in practice
+            </h2>
+            <div className='grid md:grid-cols-2 gap-8'>
+              <Card className='border-2 border-red-200 dark:border-red-900/30'>
+                <CardHeader>
+                  <CardTitle className='text-xl text-red-600 dark:text-red-400'>
+                    Before
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className='space-y-3'>
+                  <p className='text-sm text-muted-foreground'>
+                    Long-lived EC2 runner
+                  </p>
+                  <p className='text-sm text-muted-foreground'>
+                    Manual patching / rebooting
+                  </p>
+                  <p className='text-sm text-muted-foreground'>
+                    Surprise bills when someone forgets to shut it down
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className='border-2 border-primary/30'>
+                <CardHeader>
+                  <CardTitle className='text-xl text-primary'>After</CardTitle>
+                </CardHeader>
+                <CardContent className='space-y-3'>
+                  <p className='text-sm text-muted-foreground'>
+                    Fargate runner spins up per workflow
+                  </p>
+                  <p className='text-sm text-muted-foreground'>
+                    Idempotent orchestration (no duplicate runners)
+                  </p>
+                  <p className='text-sm text-muted-foreground'>
+                    Auto-cleanup, dashboards, and Slack alerts
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className='py-24 border-b'>
         <div className='container mx-auto px-4'>
@@ -312,8 +409,30 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Who Is This For Section */}
+      <section className='py-16 border-b'>
+        <div className='container mx-auto px-4'>
+          <div className='mx-auto max-w-4xl'>
+            <h2 className='text-2xl md:text-3xl font-bold text-center mb-8'>
+              Who it's for
+            </h2>
+            <div className='space-y-3 text-center'>
+              <p className='text-muted-foreground'>
+                Platform / DevOps engineers managing GitHub Actions at scale
+              </p>
+              <p className='text-muted-foreground'>
+                Teams with monorepos or heavy test suites
+              </p>
+              <p className='text-muted-foreground'>
+                Orgs needing stricter security / compliance for CI workloads
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Quickstart Section */}
-      <section className='py-24 border-b bg-muted/30'>
+      <section className='py-24 border-b'>
         <div className='container mx-auto px-4'>
           <div className='mx-auto max-w-4xl'>
             <h2 className='text-3xl md:text-4xl font-bold text-center mb-12'>
@@ -534,10 +653,20 @@ jobs:
       {/* Footer */}
       <footer className='border-t py-8'>
         <div className='container mx-auto px-4'>
-          <div className='mx-auto max-w-6xl text-center text-sm text-muted-foreground'>
-            <p>
-              Built with AWS (ECS, Lambda, API Gateway, VPC), SST, TypeScript
-            </p>
+          <div className='mx-auto max-w-6xl'>
+            <div className='text-center space-y-4'>
+              <div className='flex items-center justify-center gap-4 text-sm text-muted-foreground'>
+                <span>Open Source · MIT License</span>
+                <span>·</span>
+                <span>Production-ready</span>
+              </div>
+              <p className='text-sm text-muted-foreground'>
+                Built and battle-tested in a healthcare EMR platform
+              </p>
+              <p className='text-xs text-muted-foreground pt-2'>
+                Built with AWS (ECS, Lambda, API Gateway, VPC), SST, TypeScript
+              </p>
+            </div>
           </div>
         </div>
       </footer>
