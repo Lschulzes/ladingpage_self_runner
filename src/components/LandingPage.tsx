@@ -13,6 +13,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { AnimatedTerminal } from '@/components/AnimatedTerminal';
 
 export function LandingPage() {
   return (
@@ -66,7 +67,7 @@ export function LandingPage() {
                 </div>
                 <div className='flex items-center gap-2 text-sm text-muted-foreground pt-2'>
                   <span className='inline-flex items-center gap-1'>
-                    <span className='h-2 w-2 rounded-full bg-green-500'></span>
+                    <span className='h-2 w-2 rounded-full bg-green-500' />
                     Production-ready
                   </span>
                   <span>·</span>
@@ -74,45 +75,8 @@ export function LandingPage() {
                 </div>
               </div>
 
-              {/* Right: Terminal Log */}
-              <div className='hidden md:block'>
-                <div className='bg-card border-2 rounded-lg overflow-hidden shadow-lg'>
-                  <div className='bg-muted px-4 py-2 flex items-center gap-2 border-b'>
-                    <div className='h-2.5 w-2.5 rounded-full bg-red-500'></div>
-                    <div className='h-2.5 w-2.5 rounded-full bg-yellow-500'></div>
-                    <div className='h-2.5 w-2.5 rounded-full bg-green-500'></div>
-                    <span className='ml-2 text-xs text-muted-foreground font-mono'>
-                      runner-orchestrator
-                    </span>
-                  </div>
-                  <div className='p-6 font-mono text-sm space-y-2 bg-[#0d1117] text-[#c9d1d9]'>
-                    <div className='flex items-center gap-2'>
-                      <span className='text-primary'>&gt;</span>
-                      <span className='text-[#79c0ff]'>github:</span>
-                      <span>received workflow_run.queued</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <span className='text-primary'>&gt;</span>
-                      <span className='text-[#79c0ff]'>scheduler:</span>
-                      <span>starting runner for monorepo-ci</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <span className='text-primary'>&gt;</span>
-                      <span className='text-[#79c0ff]'>ecs:</span>
-                      <span>runTask arn:aws:ecs:...</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <span className='text-primary'>&gt;</span>
-                      <span className='text-[#79c0ff]'>runner:</span>
-                      <span>registered as self-hosted #47</span>
-                    </div>
-                    <div className='flex items-center gap-2 pt-2 border-t border-[#30363d]'>
-                      <span className='text-green-500'>✓</span>
-                      <span>workflow completed in 7m 13s – cleanup OK</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {/* Right: Animated Terminal Log */}
+              <AnimatedTerminal />
             </div>
           </div>
         </div>
