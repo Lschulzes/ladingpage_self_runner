@@ -48,7 +48,11 @@ export function LandingPage() {
               {/* Left: Text Content */}
               <div className='space-y-6'>
                 <h1 className='text-5xl md:text-6xl font-bold tracking-tight'>
-                  Ephemeral GitHub Actions runners,
+                  Ephemeral{' '}
+                  <span className='text-primary font-semibold'>
+                    GitHub Actions
+                  </span>{' '}
+                  runners,
                   <br />
                   <span className='text-primary'>production-ready</span>.
                 </h1>
