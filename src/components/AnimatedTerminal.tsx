@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { Github, Clock, Cloud, Zap } from 'lucide-react';
+import { Github, Clock, Cloud, Zap, Check } from 'lucide-react';
 
 interface TerminalLine {
   id: string;
@@ -58,6 +58,8 @@ export function AnimatedTerminal() {
   const [timer, setTimer] = useState(0);
   const [showCompletion, setShowCompletion] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
+  const [completedIds, setCompletedIds] = useState<string[]>([]);
+  const [activePingId, setActivePingId] = useState<string | null>(null);
   const intervalRef = useRef<number | null>(null);
   const timeoutRefs = useRef<number[]>([]);
 
@@ -67,11 +69,28 @@ export function AnimatedTerminal() {
     setTimer(0);
     setShowCompletion(false);
     setIsRunning(true);
+    setCompletedIds([]);
+    setActivePingId(null);
 
     // Show lines one by one
-    for (const line of terminalLines) {
+    for (const [index, line] of terminalLines.entries()) {
       const timeoutId = window.setTimeout(() => {
         setVisibleLines((prev) => [...prev, line.id]);
+
+        // When this step starts, mark the previous one as completed
+        if (index > 0) {
+          const prevId = terminalLines[index - 1].id;
+          setCompletedIds((prev) =>
+            prev.includes(prevId) ? prev : [...prev, prevId]
+          );
+
+          // Trigger a short ping animation for the step that just completed
+          setActivePingId(prevId);
+          const pingTimeoutId = window.setTimeout(() => {
+            setActivePingId((current) => (current === prevId ? null : current));
+          }, 600);
+          timeoutRefs.current.push(pingTimeoutId);
+        }
       }, line.delay);
       timeoutRefs.current.push(timeoutId);
     }
@@ -89,6 +108,18 @@ export function AnimatedTerminal() {
           setTimer(WORKFLOW_DURATION_SECONDS);
           setShowCompletion(true);
           setIsRunning(false);
+
+          // When the workflow is fully done, mark the last step as completed
+          const lastId = terminalLines[terminalLines.length - 1].id;
+          setCompletedIds((prev) =>
+            prev.includes(lastId) ? prev : [...prev, lastId]
+          );
+          setActivePingId(lastId);
+          const pingTimeoutId = window.setTimeout(() => {
+            setActivePingId((current) => (current === lastId ? null : current));
+          }, 600);
+          timeoutRefs.current.push(pingTimeoutId);
+
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
@@ -193,7 +224,8 @@ export function AnimatedTerminal() {
           {terminalLines.map((line) => {
             const Icon = line.icon;
             const isVisible = visibleLines.includes(line.id);
-            const isActive = isVisible && (isRunning || showCompletion);
+            const isActive = isVisible && isRunning;
+            const isCompleted = completedIds.includes(line.id);
 
             return (
               <div key={line.id} className='flex flex-col items-center gap-3'>
@@ -207,7 +239,9 @@ export function AnimatedTerminal() {
                 >
                   <div
                     className={`p-3 md:p-4 rounded-lg border-2 transition-all duration-500 ${
-                      isActive
+                      isCompleted
+                        ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
+                        : isActive
                         ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
                         : isVisible
                         ? 'border-primary/30 bg-primary/5'
@@ -216,7 +250,9 @@ export function AnimatedTerminal() {
                   >
                     <Icon
                       className={`h-6 w-6 md:h-8 md:w-8 transition-colors duration-300 ${
-                        isActive
+                        isCompleted
+                          ? 'text-primary'
+                          : isActive
                           ? 'text-primary'
                           : isVisible
                           ? 'text-primary/70'
@@ -224,9 +260,14 @@ export function AnimatedTerminal() {
                       }`}
                     />
                   </div>
-                  {isActive && (
+                  {/* Status indicators */}
+                  {isCompleted ? (
+                    <div className='absolute -top-1 -right-1 h-4 w-4 md:h-5 md:w-5 rounded-full bg-teal-500 text-background flex items-center justify-center shadow-lg'>
+                      <Check className='h-3 w-3' />
+                    </div>
+                  ) : activePingId === line.id ? (
                     <div className='absolute -top-1 -right-1 h-3 w-3 md:h-4 md:w-4 rounded-full bg-primary animate-ping' />
-                  )}
+                  ) : null}
                 </div>
 
                 {/* Label */}
